@@ -1,22 +1,21 @@
 use raylib::prelude::*;
 
-struct Bullet {
-    x: f32,
-    y: f32,
-    speed: f32,
-    active: bool,
-    color: Color,
-}
+mod types;
+use crate::types::{Bullet, Player};
 
 fn main() {
     let (mut rl, thread) = raylib::init().size(1000, 600).title("Zix").build();
+    let mut player = Player {
+        x: 500.0,
+        y: 550.0,
+        speed: 0.03,
+        mode: "bullet".to_string(),
+        color: Color::LIMEGREEN,
+    };
 
-    let mut player_x: f32 = 500.0;
-    let mut player_y: f32 = 550.0;
-    let player_speed: f32 = 0.03;
     let mut bullet = Bullet {
-        x: player_x + 20.0,
-        y: player_y - 10.0,
+        x: player.x + 20.0,
+        y: player.y - 10.0,
         speed: 0.05,
         active: false,
         color: Color::BLACK,
@@ -25,32 +24,32 @@ fn main() {
     while !rl.window_should_close() {
         rl.hide_cursor();
 
-        if rl.is_key_down(KeyboardKey::KEY_UP) && player_y > 0.0 {
-            player_y -= player_speed;
+        if rl.is_key_down(KeyboardKey::KEY_UP) && player.y > 0.0 {
+            player.y -= player.speed;
         }
 
-        if rl.is_key_down(KeyboardKey::KEY_DOWN) && player_y < 550.0 {
-            player_y += player_speed;
+        if rl.is_key_down(KeyboardKey::KEY_DOWN) && player.y < 550.0 {
+            player.y += player.speed;
         }
 
-        if rl.is_key_down(KeyboardKey::KEY_LEFT) && player_x > 0.0 {
-            player_x -= player_speed;
+        if rl.is_key_down(KeyboardKey::KEY_LEFT) && player.x > 0.0 {
+            player.x -= player.speed;
         }
 
-        if rl.is_key_down(KeyboardKey::KEY_RIGHT) && player_x < 950.0 {
-            player_x += player_speed;
+        if rl.is_key_down(KeyboardKey::KEY_RIGHT) && player.x < 950.0 {
+            player.x += player.speed;
         }
 
         if rl.is_key_pressed(KeyboardKey::KEY_SPACE) && !bullet.active {
             bullet.active = true;
-            bullet.x = player_x + 20.0;
-            bullet.y = player_y - 10.0;
+            bullet.x = player.x + 20.0;
+            bullet.y = player.y - 10.0;
         }
 
         let mut d = rl.begin_drawing(&thread);
         d.clear_background(Color::BLACK);
         d.draw_text(
-            &format!("X: {:.0}, Y: {:.0}", player_x, player_y),
+            &format!("X: {:.0}, Y: {:.0}", player.x, player.y),
             10,
             10,
             20,
@@ -69,7 +68,7 @@ fn main() {
             }
         }
 
-        d.draw_rectangle(player_x as i32, player_y as i32, 50, 50, Color::LIMEGREEN);
         d.draw_rectangle(bullet.x as i32, bullet.y as i32, 10, 10, bullet.color);
+        d.draw_rectangle(player.x as i32, player.y as i32, 50, 50, player.color);
     }
 }
