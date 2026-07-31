@@ -11,6 +11,7 @@ pub struct Bullet {
 pub struct Player {
     pub width: i32,
     pub height: i32,
+    pub active: bool,
     pub x: f32,
     pub y: f32,
     pub speed: f32,
