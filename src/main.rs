@@ -1,3 +1,5 @@
+use std::vec;
+
 use rand::RngExt;
 use raylib::prelude::*;
 
@@ -25,17 +27,32 @@ fn main() {
         color: Color::BLACK,
     };
 
+    let clrs: Vec<Color> = vec![
+        Color::ORANGERED,
+        Color::FLORALWHITE,
+        Color::CRIMSON,
+        Color::SILVER,
+        Color::PINK,
+        Color::TURQUOISE,
+    ];
+
     let mut rng = rand::rng();
-    let mut enemy = Enemy {
-        width: 50,
-        height: 30,
-        x: rng.random_range(0..950) as f32,
-        y: 0.0,
-        speed: 0.005,
-        color: Color::PURPLE,
-        active: true,
-        mode: "normal".to_string(),
-    };
+    let mut i: u16 = rng.random_range(4..16);
+    let mut enemies: Vec<Enemy> = Vec::new();
+    while i > 0 {
+        rng = rand::rng();
+        enemies.push(Enemy {
+            width: rng.random_range(50..100) as i32,
+            height: rng.random_range(20..80) as i32,
+            x: rng.random_range(0..950) as f32,
+            y: 0.0,
+            speed: rng.random_range(0.001..0.005),
+            color: clrs[rng.random_range(0..5)],
+            active: true,
+            mode: "normal".to_string(),
+        });
+        i -= 1;
+    }
 
     while !rl.window_should_close() {
         if rl.is_key_down(KeyboardKey::KEY_UP) && player.y > 0.0 {
@@ -73,32 +90,27 @@ fn main() {
                 bullet.active = false;
             }
 
+            // TODO: fix when enemy should be killed
             // Kill Enemy
-            if bullet.y as u32 == enemy.y as u32
-                && (bullet.x as u32 <= (enemy.x as u32 + enemy.width as u32)
-                    && (bullet.x as u32 + enemy.width as u32)
-                        >= (enemy.x as u32 + enemy.width as u32))
-            {
-                enemy.color = Color::BLACK;
-                enemy.active = false;
+            for enemy in enemies.iter_mut() {
+                if bullet.y as u32 == enemy.y as u32
+                    && (bullet.x as u32 <= (enemy.x as u32 + enemy.width as u32)
+                        && (bullet.x as u32 + enemy.width as u32)
+                            >= (enemy.x as u32 + enemy.width as u32))
+                {
+                    enemy.color = Color::GREEN;
+                    enemy.active = false;
+                }
             }
         }
 
-        if enemy.active {
-            if enemy.y >= 550.0 {
-                enemy.active = false;
-                enemy.color = Color::BLACK;
-            }
-            enemy.y += enemy.speed;
-
-            println!("{} {}", enemy.y, player.y);
-
-            if enemy.y as i32 + player.height as i32 == player.y as i32
-                && (player.x as u32 <= (enemy.x as u32 + enemy.width as u32)
-                    && (player.x as u32 + enemy.width as u32)
-                        >= (enemy.x as u32 + enemy.width as u32))
-            {
-                player.active = false;
+        for enemy in enemies.iter_mut() {
+            if enemy.active {
+                if enemy.y >= 550.0 {
+                    enemy.active = false;
+                    enemy.color = Color::BLACK;
+                }
+                enemy.y += enemy.speed;
             }
         }
 
@@ -111,15 +123,19 @@ fn main() {
                 20,
                 Color::LIMEGREEN,
             );
+            enemies.retain(|enemy| enemy.active);
+            println!("{:?}", enemies);
 
             // Draw Enemy
-            d.draw_rectangle(
-                enemy.x as i32,
-                enemy.y as i32,
-                enemy.width,
-                enemy.height,
-                enemy.color,
-            );
+            for enemy in enemies.iter_mut() {
+                d.draw_rectangle(
+                    enemy.x as i32,
+                    enemy.y as i32,
+                    enemy.width,
+                    enemy.height,
+                    enemy.color,
+                );
+            }
 
             // Draw Bullet
             d.draw_rectangle(bullet.x as i32, bullet.y as i32, 10, 10, bullet.color);
@@ -139,22 +155,3 @@ fn main() {
         }
     }
 }
-
-/*
-fn create_enemies() {
-    let mut rng = rand::rng();
-    let i: u16 = rng.random_range(2..6) - 1;
-
-    let mut enemies: Vec<Enemy> = Vec::new();
-    while i > 0 {
-        enemies.push(Enemy {
-            x: rng.random_range(0..950) as f32,
-            y: 0.0,
-            speed: 0.009,
-            color: Color::BLACK,
-            active: true,
-            mode: "normal".to_string(),
-        });
-    }
-}
-*/
