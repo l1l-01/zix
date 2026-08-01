@@ -27,14 +27,7 @@ fn main() {
         color: Color::BLACK,
     };
 
-    let clrs: Vec<Color> = vec![
-        Color::ORANGERED,
-        Color::FLORALWHITE,
-        Color::CRIMSON,
-        Color::SILVER,
-        Color::PINK,
-        Color::TURQUOISE,
-    ];
+    let clrs: Vec<Color> = vec![Color::ORANGE, Color::SILVER, Color::CYAN];
 
     let mut rng = rand::rng();
     let mut i: u16 = rng.random_range(4..16);
@@ -43,11 +36,11 @@ fn main() {
         rng = rand::rng();
         enemies.push(Enemy {
             width: rng.random_range(50..100) as i32,
-            height: rng.random_range(20..80) as i32,
+            height: rng.random_range(20..50) as i32,
             x: rng.random_range(0..950) as f32,
             y: 0.0,
             speed: rng.random_range(0.001..0.005),
-            color: clrs[rng.random_range(0..5)],
+            color: clrs[rng.random_range(0..3)],
             active: true,
             mode: "normal".to_string(),
         });
