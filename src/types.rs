@@ -1,5 +1,6 @@
 use raylib::prelude::Color;
 
+#[derive(Debug)]
 pub struct Bullet {
     pub x: f32,
     pub y: f32,
@@ -8,6 +9,7 @@ pub struct Bullet {
     pub color: Color,
 }
 
+#[derive(Debug)]
 pub struct Player {
     pub width: i32,
     pub height: i32,
@@ -19,6 +21,7 @@ pub struct Player {
     pub color: Color,
 }
 
+#[derive(Debug)]
 pub struct Enemy {
     pub width: i32,
     pub height: i32,
