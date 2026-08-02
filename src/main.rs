@@ -1,3 +1,4 @@
+use ::core::panic;
 use std::vec;
 
 use rand::RngExt;
@@ -15,7 +16,7 @@ fn main() {
         y: 550.0,
         speed: 0.03,
         active: true,
-        mode: "bullet".to_string(),
+        mode: "normal".to_string(),
         color: Color::LIMEGREEN,
     };
 
@@ -27,10 +28,12 @@ fn main() {
         color: Color::BLACK,
     };
 
-    let clrs: Vec<Color> = vec![Color::ORANGE, Color::SILVER, Color::CYAN];
+    let mut score: i16 = 0;
+
+    let clrs: Vec<Color> = vec![Color::ORANGE, Color::REBECCAPURPLE, Color::CYAN];
 
     let mut rng = rand::rng();
-    let mut i: u16 = rng.random_range(4..16);
+    let mut i: u16 = rng.random_range(10..20);
     let mut enemies: Vec<Enemy> = Vec::new();
     while i > 0 {
         rng = rand::rng();
@@ -39,7 +42,7 @@ fn main() {
             height: rng.random_range(20..50) as i32,
             x: rng.random_range(0..950) as f32,
             y: 0.0,
-            speed: rng.random_range(0.001..0.005),
+            speed: rng.random_range(0.001..0.002),
             color: clrs[rng.random_range(0..3)],
             active: true,
             mode: "normal".to_string(),
@@ -48,6 +51,15 @@ fn main() {
     }
 
     while !rl.window_should_close() {
+        for value in (5..=100).step_by(5) {
+            if score == value {
+                player.speed = 0.03;
+            } else {
+                player.speed = 0.05;
+            }
+            break;
+        }
+
         if rl.is_key_down(KeyboardKey::KEY_UP) && player.y > 0.0 {
             player.y -= player.speed;
         }
@@ -79,6 +91,7 @@ fn main() {
             if bullet.y as i32 == 0 {
                 bullet.color = Color::BLACK;
             }
+
             if bullet.y < 0.0 {
                 bullet.active = false;
             }
@@ -91,8 +104,8 @@ fn main() {
                         && (bullet.x as u32 + enemy.width as u32)
                             >= (enemy.x as u32 + enemy.width as u32))
                 {
-                    enemy.color = Color::GREEN;
                     enemy.active = false;
+                    score += 1;
                 }
             }
         }
@@ -102,6 +115,7 @@ fn main() {
                 if enemy.y >= 550.0 {
                     enemy.active = false;
                     enemy.color = Color::BLACK;
+                    score -= 1;
                 }
                 enemy.y += enemy.speed;
             }
@@ -109,15 +123,7 @@ fn main() {
 
         if player.active {
             d.clear_background(Color::BLACK);
-            d.draw_text(
-                &format!("X: {:.0}, Y: {:.0}", player.x, player.y),
-                10,
-                10,
-                20,
-                Color::LIMEGREEN,
-            );
-            enemies.retain(|enemy| enemy.active);
-            println!("{:?}", enemies);
+            /*println!("{:?}", enemies);*/
 
             // Draw Enemy
             for enemy in enemies.iter_mut() {
@@ -141,6 +147,15 @@ fn main() {
                 player.height,
                 player.color,
             );
+
+            d.draw_text(
+                &format!("Score: {}, Speed: {}", score, player.speed),
+                10,
+                10,
+                20,
+                Color::LIMEGREEN,
+            );
+            enemies.retain(|enemy| enemy.active);
         } else {
             d.clear_background(Color::RAYWHITE);
             d.clear_background(Color::BLACK);
