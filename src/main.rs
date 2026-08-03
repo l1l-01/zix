@@ -1,8 +1,6 @@
-use ::core::panic;
-use std::vec;
-
 use rand::RngExt;
 use raylib::prelude::*;
+use std::vec;
 
 mod types;
 use crate::types::{Bullet, Enemy, Player};
@@ -51,11 +49,17 @@ fn main() {
     }
 
     while !rl.window_should_close() {
-        for value in (5..=100).step_by(5) {
+        for value in (5..=200).step_by(5) {
             if score == value {
                 player.speed = 0.03;
+                player.color = Color::LIMEGREEN;
+                player.mode = "normal".to_string();
+                bullet.speed = 0.05;
             } else {
+                bullet.speed = 0.08;
                 player.speed = 0.05;
+                player.color = Color::YELLOW;
+                player.mode = "speed".to_string();
             }
             break;
         }
@@ -86,7 +90,7 @@ fn main() {
 
         if bullet.active {
             bullet.y -= bullet.speed;
-            bullet.color = Color::RED;
+            bullet.color = player.color;
 
             if bullet.y as i32 == 0 {
                 bullet.color = Color::BLACK;
@@ -116,6 +120,10 @@ fn main() {
                     enemy.active = false;
                     enemy.color = Color::BLACK;
                     score -= 1;
+
+                    if score < 0 {
+                        player.active = false;
+                    }
                 }
                 enemy.y += enemy.speed;
             }
@@ -149,17 +157,17 @@ fn main() {
             );
 
             d.draw_text(
-                &format!("Score: {}, Speed: {}", score, player.speed),
+                &format!("Score: {}, Mode: {}", score, player.mode),
                 10,
                 10,
                 20,
-                Color::LIMEGREEN,
+                player.color,
             );
             enemies.retain(|enemy| enemy.active);
         } else {
-            d.clear_background(Color::RAYWHITE);
             d.clear_background(Color::BLACK);
-            d.draw_text("GAME OVER", 10, 10, 40, Color::LIMEGREEN);
+            d.draw_text("GAME OVER", 10, 10, 40, Color::RED);
+            d.draw_text("Press 'P' to play!", 10, 60, 20, Color::RED);
         }
     }
 }
