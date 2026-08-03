@@ -1,6 +1,5 @@
 use rand::RngExt;
 use raylib::prelude::*;
-use std::vec;
 
 mod types;
 use crate::types::{Bullet, Enemy, Player};
@@ -28,22 +27,52 @@ fn main() {
 
     let mut score: i16 = 0;
 
-    let clrs: Vec<Color> = vec![Color::ORANGE, Color::REBECCAPURPLE, Color::CYAN];
-
     let mut rng = rand::rng();
     let mut i: u16 = rng.random_range(10..20);
     let mut enemies: Vec<Enemy> = Vec::new();
     while i > 0 {
-        rng = rand::rng();
+        let speed = rng.random_range(1..5) as f32 / 1000.0;
+        let clr: Color;
+        let mode: String;
+        let damage: u16;
+
+        match speed {
+            0.004 => {
+                clr = Color::ORANGE;
+                mode = "speed".to_string();
+                damage = 1;
+            }
+            0.003 => {
+                clr = Color::CYAN;
+                mode = "stretch".to_string();
+                damage = 2;
+            }
+            0.002 => {
+                clr = Color::SALMON;
+                mode = "camelion".to_string();
+                damage = 5;
+            }
+            0.001 => {
+                clr = Color::RED;
+                mode = "tank".to_string();
+                damage = 10;
+            }
+            _ => {
+                clr = Color::SILVER;
+                mode = "none".to_string();
+                damage = 1;
+            }
+        };
         enemies.push(Enemy {
             width: rng.random_range(50..100) as i32,
             height: rng.random_range(20..50) as i32,
             x: rng.random_range(0..950) as f32,
             y: 0.0,
-            speed: rng.random_range(0.001..0.002),
-            color: clrs[rng.random_range(0..3)],
+            speed: speed,
+            color: clr,
             active: true,
-            mode: "normal".to_string(),
+            mode: mode,
+            damage: damage,
         });
         i -= 1;
     }
@@ -51,11 +80,13 @@ fn main() {
     while !rl.window_should_close() {
         for value in (5..=200).step_by(5) {
             if score == value {
+                // Return player speed into normal
                 player.speed = 0.03;
                 player.color = Color::LIMEGREEN;
                 player.mode = "normal".to_string();
                 bullet.speed = 0.05;
             } else {
+                // Boost player speed
                 bullet.speed = 0.08;
                 player.speed = 0.05;
                 player.color = Color::YELLOW;
@@ -119,7 +150,7 @@ fn main() {
                 if enemy.y >= 550.0 {
                     enemy.active = false;
                     enemy.color = Color::BLACK;
-                    score -= 1;
+                    score -= enemy.damage as i16;
 
                     if score < 0 {
                         player.active = false;
