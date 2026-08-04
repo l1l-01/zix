@@ -28,13 +28,15 @@ fn main() {
     let mut score: i16 = 0;
 
     let mut rng = rand::rng();
-    let mut i: u16 = rng.random_range(10..20);
+    let mut i: u16 = rng.random_range(10..15);
     let mut enemies: Vec<Enemy> = Vec::new();
+    let mut minions: Vec<Enemy> = Vec::new();
+
     while i > 0 {
         let speed = rng.random_range(1..5) as f32 / 1000.0;
         let clr: Color;
         let mode: String;
-        let damage: u16;
+        let damage: i32;
 
         match speed {
             0.004 => {
@@ -54,7 +56,7 @@ fn main() {
             }
             0.001 => {
                 clr = Color::RED;
-                mode = "tank".to_string();
+                mode = "multiplier".to_string();
                 damage = 10;
             }
             _ => {
@@ -133,6 +135,7 @@ fn main() {
 
             // TODO: fix when enemy should be killed
             // Kill Enemy
+
             for enemy in enemies.iter_mut() {
                 if bullet.y as u32 == enemy.y as u32
                     && (bullet.x as u32 <= (enemy.x as u32 + enemy.width as u32)
@@ -140,9 +143,33 @@ fn main() {
                             >= (enemy.x as u32 + enemy.width as u32))
                 {
                     enemy.active = false;
+                    if enemy.mode == "multiplier".to_string() {
+                        let mut n: u8 = rng.random_range(0..4);
+                        while n > 0 {
+                            minions.push(Enemy {
+                                width: 50,
+                                height: 20,
+                                x: rng.random_range(0..950) as f32,
+                                y: 0.0,
+                                speed: 0.01,
+                                color: Color::RED,
+                                active: true,
+                                mode: "minion".to_string(),
+                                damage: 2,
+                            });
+                            n -= 1;
+                        }
+                    }
                     score += 1;
                 }
             }
+        }
+
+        let mut len = minions.len();
+        while len > 0 {
+            let m = minions.remove(len - 1);
+            enemies.push(m);
+            len -= 1;
         }
 
         for enemy in enemies.iter_mut() {
@@ -160,9 +187,59 @@ fn main() {
             }
         }
 
+        if enemies.len() == 0 && player.active {
+            i = rng.random_range(10..20);
+
+            while i > 0 {
+                let speed = rng.random_range(1..5) as f32 / 1000.0;
+                let clr: Color;
+                let mode: String;
+                let damage: i32;
+
+                match speed {
+                    0.004 => {
+                        clr = Color::ORANGE;
+                        mode = "speed".to_string();
+                        damage = 1;
+                    }
+                    0.003 => {
+                        clr = Color::CYAN;
+                        mode = "stretch".to_string();
+                        damage = 2;
+                    }
+                    0.002 => {
+                        clr = Color::SALMON;
+                        mode = "camelion".to_string();
+                        damage = 5;
+                    }
+                    0.001 => {
+                        clr = Color::RED;
+                        mode = "multiplier".to_string();
+                        damage = 10;
+                    }
+                    _ => {
+                        clr = Color::SILVER;
+                        mode = "none".to_string();
+                        damage = 1;
+                    }
+                };
+                enemies.push(Enemy {
+                    width: rng.random_range(50..100) as i32,
+                    height: rng.random_range(20..50) as i32,
+                    x: rng.random_range(0..950) as f32,
+                    y: 0.0,
+                    speed: speed,
+                    color: clr,
+                    active: true,
+                    mode: mode,
+                    damage: damage,
+                });
+                i -= 1;
+            }
+        }
+
         if player.active {
             d.clear_background(Color::BLACK);
-            /*println!("{:?}", enemies);*/
 
             // Draw Enemy
             for enemy in enemies.iter_mut() {
