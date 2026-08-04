@@ -7,8 +7,8 @@ use crate::types::{Bullet, Enemy, Player};
 fn main() {
     let (mut rl, thread) = raylib::init().size(1000, 600).title("Zix").build();
     let mut player = Player {
-        width: 50,
-        height: 50,
+        width: 40,
+        height: 40,
         x: 500.0,
         y: 550.0,
         speed: 0.03,
@@ -36,7 +36,7 @@ fn main() {
         let speed = rng.random_range(1..5) as f32 / 1000.0;
         let clr: Color;
         let mode: String;
-        let damage: i32;
+        let damage: i16;
 
         match speed {
             0.004 => {
@@ -66,8 +66,8 @@ fn main() {
             }
         };
         enemies.push(Enemy {
-            width: rng.random_range(50..100) as i32,
-            height: rng.random_range(20..50) as i32,
+            width: rng.random_range(60..100) as i32,
+            height: 20,
             x: rng.random_range(0..950) as f32,
             y: 0.0,
             speed: speed,
@@ -147,7 +147,7 @@ fn main() {
                         let mut n: u8 = rng.random_range(0..4);
                         while n > 0 {
                             minions.push(Enemy {
-                                width: 50,
+                                width: 60,
                                 height: 20,
                                 x: rng.random_range(0..950) as f32,
                                 y: 0.0,
@@ -177,7 +177,7 @@ fn main() {
                 if enemy.y >= 550.0 {
                     enemy.active = false;
                     enemy.color = Color::BLACK;
-                    score -= enemy.damage as i16;
+                    score -= enemy.damage;
 
                     if score < 0 {
                         player.active = false;
@@ -194,7 +194,7 @@ fn main() {
                 let speed = rng.random_range(1..5) as f32 / 1000.0;
                 let clr: Color;
                 let mode: String;
-                let damage: i32;
+                let damage: i16;
 
                 match speed {
                     0.004 => {
