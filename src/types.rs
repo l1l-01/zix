@@ -31,5 +31,5 @@ pub struct Enemy {
     pub color: Color,
     pub active: bool,
     pub mode: String,
-    pub damage: u16,
+    pub damage: i16,
 }
