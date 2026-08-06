@@ -37,22 +37,23 @@ fn main() {
         let clr: Color;
         let mode: String;
         let damage: i16;
+        let mut width: i32 = rng.random_range(60..100) as i32;
 
         match speed {
-            0.004 => {
+            0.006 => {
                 clr = Color::ORANGE;
                 mode = "speed".to_string();
-                damage = 1;
+                damage = 2;
             }
             0.003 => {
                 clr = Color::CYAN;
-                mode = "stretch".to_string();
-                damage = 2;
+                mode = "none".to_string();
+                damage = 4;
             }
             0.002 => {
                 clr = Color::SALMON;
                 mode = "camelion".to_string();
-                damage = 5;
+                damage = 8;
             }
             0.001 => {
                 clr = Color::RED;
@@ -63,10 +64,11 @@ fn main() {
                 clr = Color::SILVER;
                 mode = "none".to_string();
                 damage = 1;
+                width = 40;
             }
         };
         enemies.push(Enemy {
-            width: rng.random_range(60..100) as i32,
+            width: width,
             height: 20,
             x: rng.random_range(0..950) as f32,
             y: 0.0,
@@ -135,7 +137,6 @@ fn main() {
 
             // TODO: fix when enemy should be killed
             // Kill Enemy
-
             for enemy in enemies.iter_mut() {
                 if bullet.y as u32 == enemy.y as u32
                     && (bullet.x as u32 <= (enemy.x as u32 + enemy.width as u32)
@@ -143,19 +144,20 @@ fn main() {
                             >= (enemy.x as u32 + enemy.width as u32))
                 {
                     enemy.active = false;
+
                     if enemy.mode == "multiplier".to_string() {
-                        let mut n: u8 = rng.random_range(0..4);
+                        let mut n: u8 = rng.random_range(1..3);
                         while n > 0 {
                             minions.push(Enemy {
-                                width: 60,
+                                width: 80,
                                 height: 20,
                                 x: rng.random_range(0..950) as f32,
                                 y: 0.0,
-                                speed: 0.01,
-                                color: Color::RED,
+                                speed: 0.005,
+                                color: Color::MAGENTA,
                                 active: true,
                                 mode: "minion".to_string(),
-                                damage: 2,
+                                damage: 8,
                             });
                             n -= 1;
                         }
@@ -195,22 +197,23 @@ fn main() {
                 let clr: Color;
                 let mode: String;
                 let damage: i16;
+                let mut width: i32 = rng.random_range(60..100) as i32;
 
                 match speed {
-                    0.004 => {
+                    0.006 => {
                         clr = Color::ORANGE;
                         mode = "speed".to_string();
-                        damage = 1;
+                        damage = 2;
                     }
                     0.003 => {
                         clr = Color::CYAN;
-                        mode = "stretch".to_string();
-                        damage = 2;
+                        mode = "none".to_string();
+                        damage = 4;
                     }
                     0.002 => {
                         clr = Color::SALMON;
                         mode = "camelion".to_string();
-                        damage = 5;
+                        damage = 8;
                     }
                     0.001 => {
                         clr = Color::RED;
@@ -221,11 +224,12 @@ fn main() {
                         clr = Color::SILVER;
                         mode = "none".to_string();
                         damage = 1;
+                        width = 40;
                     }
                 };
                 enemies.push(Enemy {
-                    width: rng.random_range(50..100) as i32,
-                    height: rng.random_range(20..50) as i32,
+                    width: width,
+                    height: 20,
                     x: rng.random_range(0..950) as f32,
                     y: 0.0,
                     speed: speed,
